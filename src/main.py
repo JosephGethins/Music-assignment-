@@ -12,7 +12,7 @@ from synthesizers.fm import FMSynth
 from synthesizers.subtractive import SubtractiveSynth
 from timeline import render_timeline
 
-STUDENT_ID = "12345678"   # <- put your real student ID here
+My_student_id = "23459886"   
 
 SYNTHS = {
     "additive": AdditiveSynth(),
@@ -45,7 +45,7 @@ def main() -> None:
     for name, synth in SYNTHS.items():
         audio = render_timeline(events=events, synthesizer=synth, config=config)
         check_audio(name, audio, config.sample_rate)
-        path = save_wav(str(out_dir / f"{STUDENT_ID}_{name}.wav"), audio, config.sample_rate)
+        path = save_wav(str(out_dir / f"{My_student_id}_{name}.wav"), audio, config.sample_rate)
         print(f"  saved {path}")
 
 

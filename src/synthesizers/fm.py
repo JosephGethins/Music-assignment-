@@ -13,11 +13,8 @@ class FMSynth(Synthesizer):
     y(t) = sin(2*pi*fc*t + I * sin(2*pi*fm*t)),  fm = ratio * fc
 
     Parameters:
-      ratio        modulator / carrier frequency, default 2.0 (lecture)
-      index        modulation index I, default 5.0 (lecture)
-      index_end    OPTIONAL extension: if given, the index decays from `index`
-                   to `index_end`. Default None = constant index (lecture).
-      index_decay  time constant (s) of that decay, default 0.3
+      ratio   modulator / carrier frequency, default 2.0 (lecture)
+      index   modulation index I, default 5.0 (lecture)
       attack, decay, sustain_level, release   ADSR for amplitude
     """
 
@@ -38,15 +35,10 @@ class FMSynth(Synthesizer):
         s = dict(parameters or {})
         ratio = float(s.get("ratio", 2.0))
         index = float(s.get("index", 5.0))
-        index_end = s.get("index_end")
-        index_end = index if index_end is None else float(index_end)
-        index_decay = float(s.get("index_decay", 0.3))
         if ratio <= 0:
             raise ValueError("ratio must be positive")
-        if index < 0 or index_end < 0:
-            raise ValueError("index values must be >= 0")
-        if index_decay <= 0:
-            raise ValueError("index_decay must be positive")
+        if index < 0:
+            raise ValueError("index must be >= 0")
 
         envelope = adsr_envelope(
             gate_duration_seconds=gate_duration_seconds,
@@ -58,10 +50,7 @@ class FMSynth(Synthesizer):
         )
         t = np.arange(envelope.size) / sample_rate
 
-        # Equal to `index` throughout unless index_end is set
-        index_env = index_end + (index - index_end) * np.exp(-t / index_decay)
-
         modulator = np.sin(2 * np.pi * (ratio * frequency) * t)
-        signal = np.sin(2 * np.pi * frequency * t + index_env * modulator)
+        signal = np.sin(2 * np.pi * frequency * t + index * modulator)
 
         return (dynamic * envelope * signal).astype(np.float32)
