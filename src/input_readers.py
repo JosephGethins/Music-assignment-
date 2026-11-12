@@ -44,7 +44,6 @@ def read_with_music21(path: str | Path) -> list[MusicalEvent]:
                 )
             )
         elif isinstance(element, chord.Chord):
-            # Notes in a chord share onset and duration.
             for pitch in element.pitches:
                 events.append(
                     MusicalEvent(
@@ -77,8 +76,8 @@ def read_midi(path: str | Path) -> list[MusicalEvent]:
     events: list[MusicalEvent] = []
 
     for track in midi_file.tracks:
-        tick = 0          # absolute time; msg.time is only a delta
-        active = {}       # (channel, note) -> list of (start_tick, velocity)
+        tick = 0          
+        active = {}       
 
         for msg in track:
             tick += msg.time
@@ -90,7 +89,7 @@ def read_midi(path: str | Path) -> list[MusicalEvent]:
             elif is_off:
                 stack = active.get((msg.channel, msg.note))
                 if not stack:
-                    continue  # note_off with no matching note_on
+                    continue  
                 start, velocity = stack.pop(0)
                 events.append(
                     MusicalEvent(
